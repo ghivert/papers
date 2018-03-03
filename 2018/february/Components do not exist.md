@@ -2,6 +2,10 @@
 
 Components. They're present everywhere today. JavaScript use them a lot. Object Oriented Programming do it as well. And they're right.
 
+_This article comes from the French version on my blog [here](https://guillaumehivert.io/article/programmation-fonctionnelle--les-composants-nexistent-pas)._
+
+_Vous pouvez retrouver [la version française de cet article sur mon blog](https://guillaumehivert.io/article/programmation-fonctionnelle--les-composants-nexistent-pas) pour tous les francophones !_
+
 That's why developers naturally reuse the same vocabulary when they're switching from one programming language to another. The paradigm shift from object oriented to functional programming changes a lot of things in daily life. Being able to keep the same vocabulary minimizes the changing cost. However, it creates a problem: object vocabulary is not always suited in functional world. Switching from paradigm induces unfortunately to learn a new vocabulary.
 
 Components are the perfect example. Because they're omnipresent in JavaScript and totally missing in elm, beginners are often perplex. Let me explain:
