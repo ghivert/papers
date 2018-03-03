@@ -95,7 +95,7 @@ type alias Model =
   }
 ```
 
-Les deux modèles de toolbar et de footer envolés, la structure devient bien plus compacte, avec un code de vue plus simple :
+With both models of toolbar and footer disappeared, the structure is more compact, and the code much simpler:
 
 ```elm
 view : Model -> Html msg
@@ -116,12 +116,12 @@ footerView date =
     [ dateView date ]
 ```
 
-Et voilà ! Le code est simplifié, le besoin de communication a disparu !
+And voilà! The code is simpler, the need for communication gone!
 
-En règle général, le « besoin de communication entre composants » est symptomatique d'un problème de compréhension. Symptomatique d'un problème de modélisation. À force de vouloir réduire au maximum le scope de chaque variable, on se retrouve à vouloir faire communiquer entre eux des morceaux de code qui n'en ont pas besoin. Il est alors important d'identifier les valeurs qui nécessitent d'être mises en commun, et de les fusionner. Il faut retravailler son modèle, repenser le partage des données. Le code ci-dessus en est un parfait exemple. Dans cet exemple, cela parait évidemment très facile, mais pensez à un modèle avec 4 niveaux de profondeur, avec 6 champs à chaque fois. Lors d'une séance de développement intensive, il est facile de passer à côté de ce qui peut paraître évident dans un code de quelques lignes.
+In general, the "need for communication between components" is a symptom of a broader comprehension problem. A symptom of a design problem. When wanting to reduce the scope of each variable, we end up wanting to make communicating parts of code which don't need it. Then, it is important to identify the common values, and merging them. We must redesign the model, think again about the data. The above code is the perfect example. In this example, it seems really easy, but think about a model with 4 levels of nesting, with 6 fields each times. When hard developing, it's easy to miss what is evident in a program with few lines of code.
 
 ```elm
--- Oui, je parle bien d'un Model de ce type.
+-- Yes, I'm talking about a model like this.
 type alias Model =
   { home : Home
   , articles : Articles
@@ -149,12 +149,10 @@ type alias User =
   }  
 ```
 
-Dans le modèle ci-dessus, il est amusant de noter que la modélisation manque cruellement de réflexion. En effet, un Article appartient toujours à un utilisateur. Pourquoi comporte-t-il alors un `userId` ? Pourquoi les articles ne sont-ils pas dans la structure `User` directement ? Cela ne parait pas très grave dans un premier temps, mais que se passera-t-il lors de l'ajout de fonctionnalités ? Va-t-on devoir effectuer un `searchUserById` à chaque fois que l'on obtient un article ? Va-t-on devoir rajouter des `userId` pour tout ce qui appartient à l'utilisateur ? Cela peut rapidement amener à des problèmes de communication ou de transmission de données (et donc de création de messages en elm)…
+In the above model, we can note that design missed brainstorming. Indeed, an Article always belongs to an user. Then, why does it have a `userId`? Why articles are not directly in the `User` structure? This does not seem grave in a first time. But what will happen when adding features? Is a `searchUserById` necessary each time we get an article? Will we have to add `userId` for everything belonging to a user? This can quickly lead to communication or data transmission problem (which lead to message creation in elm)…
 
-Pour finir, j'aimerais insister sur le fait qu'une vue n'est qu'une façon parmi tant d'autres d'afficher les données organisées d'un modèle. La vue dérive des données, et non pas l'inverse. Ce qui signifie que dans une application elm, le modèle doit être pensé en priorité sur la vue, puisque celle-ci peut toujours s'accommoder du modèle — qui lui ne peut s'adapter à la vue. Selon la vue utilisée pour le rendu, il s'agit d'une vision particulière et souvent tronquée du modèle : dans le cas de l'édition de son profil, on se fiche royalement de connaître la liste des articles en tendance sur Medium. Lors de l'affichage des articles en tendance sur Medium, on se fiche royalement de ce que contient notre profil. Pourtant, toutes ces informations se trouvent en permanence dans la RAM de notre navigateur, dans notre programme elm. Il ne s'agit que d'un choix, de sélectionner une partie de notre modèle seulement, car notre vue nous le permet. Ne pas tout utiliser, pour ne pas noyer notre utilisateur sous les informations qui ne l'intéresse pas. Ce n'est pas parce que nos données sont organisées d'une manière particulière dans notre application que la vue doit s'organiser de la même manière. Celle-ci est découplée des données autant que possible.
+To conclude, I would like to insist that a view is only one way to display the data from a model. There could be other views for the same model. The view is deriving from the data, and not the opposite. That means that in an elm application, the model must always be designed before the view, because you can easily do what you want with the model. Depending on the view used for the render, it is only a particular vision, always truncated from the model. On a user profile edit page, we don't care about the last trends on Medium. We are focusing on editing our profile. When browsing the latest trends on Medium, we don't care about what our profile looks like. But all those data, from user information to latest trends articles are present in the browser, in RAM. It is only a choice, to select only a part of the model, because the view allows it. Using only a part of the model allows the user to focus on what matters for him. It's not because data are organized in a particular way in our application that the view should mirror them. The view is uncoupled form the data as much as possible.
 
-Le vocabulaire habituel ainsi que les concepts sont souvent différents en programmation fonctionnelle par rapport à la programmation objet, et il faut donc réapprendre un vocabulaire particulier et prendre de nouvelles habitudes. Mais cela ne doit pas faire peur ! De la même manière que lorsque l'on apprend une langue étrangère, cela peut être difficile au premier abord, mais une fois que l'on se débrouille avec, on prend un plaisir immense et on évolue extrêmement vite ! Alors je n'ai qu'un conseil à vous donner : abandonnez vos composants, et passer au plus vite à elm !
+The usual vocabulary as well as the concepts are often different in functional programming than in object oriented programming. Learn a new vocabulary and getting accustomed to new habits is required. But you should not be afraid! Just like you learn a new language, like japanese, it can be hard at first, but once used to it, it becomes pleasing to use, and we evolve really quick! So my only advice would be: forget the component et jump into elm!
 
-Cet article m'est venu suite à mes discussions au dernier [meetup elm de Paris](https://www.meetup.com/fr-FR/Meetup-Elm-Paris) (auquel je vous convie bien évidemment !). De nombreux débutants me parlaient continuellement de composants et souhaitaient envoyer des messages entre composants, à l'instar de React. Mais cela n'avait pas de sens, et je n'arrivais pas à mettre des mots dessus. Quelques jours après, je suis enfin capable de formuler ce qui me gênait, dans l'espoir de rassurer ceux qui souhaiteraient faire le grand saut dans la programmation fonctionnelle.
-
-_La traduction anglaise de ce texte se trouve également sur Medium. Longue vie à la langue française !_
+This article came to me after my discussions at the [elm meetup in Paris](https://www.meetup.com/fr-FR/Meetup-Elm-Paris) (in which you are obviously welcome!). Many beginners were talking continually about components and tried to send messages between components, like in React. But all of this didn't make sense. Few days after, I'm finally able to formulate what bothered me, in hope to reassure everyone looking to jump in functional programming.
