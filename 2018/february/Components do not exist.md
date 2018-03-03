@@ -16,15 +16,15 @@ A component is always defined by a specific characteristic: it communicates with
 
 In a typical React Single Page Application not using reducers like Redux, "component" makes sense. Each part of the application has an internal state, a rendering function, and a communication "interface". It can both have a particular behavior and communicates with every other components around. When talking about objects in general, "component" are really perfectly suited, because object oriented programming was created with internal state and message passing in mind.
 
-Functional programming is about functions and data structures. Those data structures must be uncoupled as much as possible. Les structures de données seules ne communiquent pas vers l'extérieur. Il n'existe aucune communication, aucun passage de données avec le monde extérieur. Les données existent, sont structurées, et peuvent être utilisées, mais elle ne communiquent pas avec le monde extérieur. La caractéristique principale du composant n'est pas remplie : la structure de données n'est donc pas un composant. Il s'agit d'un paquet de données — structuré ou non — manipulable à l'aide de fonctions.
+Functional programming is about functions and data structures. Those functions and data structures must be uncoupled as much as possible. Data structures alone are not communicating. There is no communication, no message passing to the outside world. Data exist, they are structured, and they can be used. But they never are communicating each other. The main characteristic of a component is not present: the data structure is not a component. It's a bunch of data — structured or not — which can be used with functions.
 
-Mais puisqu'un exemple vaut mieux qu'un long discours, continuons dans le cas d'une application web, cette fois-ci construite à l'aide d'elm. En elm, l'ensemble des données de l'application réside dans une grosse structure de données (un record) : le modèle. Chaque évènement peut modifier l'état de l'application. Un nouveau modèle est donc généré en fonction de l'ancien modèle et de l'évènement reçu. De ce nouveau modèle, il est possible de déduire un nouvel affichage pour l'application. Aucune étape de ce parcours ne comporte de communication et de passage de message. En réalité, le seul passage de message existe entre l'application elle-même et le monde extérieur. L'application elle-même serait-elle un énorme composant ? *Selon la définition ci-dessus, oui.* L'instanciation d'une application elm donne accès à des ports permettant de communiquer avec le reste de l'application JavaScript.
+Because an example is better than a long speech, keep going with a web application, built with elm. In elm, all data remains in a huge record: the model. Each event is able to modify the state of the application. A new model is generated in function of the old model and the received event. From this new model, it's possible to generate a new view for the application. There is no communication or message passing in this process. Actually, the only message comes from the outside world. From ports, and everything else. According to the previous definition, the application itself is a huge component able to communicate with the rest of the JavaScript and the web page.
 
-Mais, si l'application entière est un composant, des composants internes se cachent-ils dans l'application ? Absolument pas. Une application elm (et plus généralement une application fonctionnelle pure) ne comporte aucun composant. Cela crée une confusion trop régulière auprès des débutants de la programmation fonctionnelle. En voulant à tout prix retrouver le même comportement qu'avec des composants, ils déforment le langage avec lequel ils sont en train de coder.
+But, in React, even though the entire application is a component, are some internal components hiding in elm? Absolutely not. An elm application (and more generally a pure functional application) do not involve any component. This creates too much confusion for beginners functional programmers. They try to mimic the same behavior in elm than in React, and they distort the language they use.
 
-Continuons avec le cas d'une application elm. Lors de la génération de la vue (le HTML de l'application), il est courant de séparer les données selon la façon dont on les utilise visuellement. Si un sélecteur de date se trouve dans la toolbar, on aura tendance à placer la donnée de date dans la structure de la toolbar au sein de notre modèle. Maintenant, si cette même date est utile également dans le footer de l'application, les débutants ont tendance à vouloir réutiliser la date de la toolbar. En soit, cela est une bonne chose. Toutefois, puisque cette donnée n'existe que dans la toolbar, ils s'imaginent devoir générer un message spécifique adressé au footer au sein de elm avec la date indiquée dans la toolbar. Il s'agit exactement du cas où le footer est vu comme un composant indépendant de la toolbar. Toutefois, comme nous l'avons vu plus haut, les composants n'existent pas en elm. Pourquoi un tel problème se soulève-t-il ?
+Let's keep going with an elm application. During view generation (i.e. HTML generation), we often separate data according to the way we are visually using it. If a date picker is in the toolbar, we generally put the date data inside the toolbar structure in the model. Now, what if this data is also useful in the footer of the app? Beginners often want to reuse the same date. And they are right. However as the data exist only in the toolbar, they imagine that they must generate a message to transmit the data the to footer, with the date from the toolbar. It is the exact case where the footer is seen as an independent component from the toolbar. But, as we already saw, components do not exist in elm. Why such a problem?
 
-Prenons l'exemple d'un modèle simple mais suffisant. (L'exemple est évidemment trivial, mais soulève le point important de la communication inter-composants.)
+Let's take a simpler example. (Of course, the example is trivial, but the inter-component communication problem is present.)
 
 ```elm
 type alias Model =
@@ -37,7 +37,7 @@ type alias Model =
   }
 ```
 
-Imaginons une fonction de vue elle aussi simple, résumant le problème :
+Let's imagine a view function, simple too, but representative of the problem:
 
 ```elm
 view : Model -> Html msg
@@ -58,9 +58,9 @@ footerView { date } =
     [ dateView date ]
 ```
 
-On décèle immédiatement le problème. La date est ici utilisée deux fois, et on peut imaginer une update mettant à jour la toolbar. Comment renvoyer une information au footer pour indiquer la nouvelle date ?
+We can immediately saw the problem. The date here is used twice, and we can imagine an update function updating the toolbar. How to send an information to the footer with the new date?
 
-Ce qu'il faut voir dans ce cas précis est que, contrairement à deux composants React comportant chacun leur espace mémoire propre, les deux dates résident ici dans le même espace mémoire. Il est tout à fait possible de réécrire cette fonction de vue différemment, ce qui apportera un nouveau point de vue :
+What's important here, contrary to React components having their own state, both date reside in the same record. It is totally possible to rewrite differently this view function:
 
 ```elm
 view : Model -> Html msg
@@ -73,7 +73,7 @@ view { toolbar, footer } =
     ]
 ```
 
-Ici aucune magie, seules les fonctions `toolbarView` et `footerView` ont été remplacées par leur contenu (ce qui est toujours possible avec des fonctions pures). D'un coup, un détail saute tout de suite au yeux : les deux dates sont facilement accessibles du premier coup. Pourquoi ne pas réécrire le tout en enlevant la redondance ?
+No magic here, only the `toolbarView` and `footerView` functions have been replaced by their content (which is always possible with pure functions). One detail is now evident: both date are easily directly accessible. Why not rewrite everything and remove redundancy?
 
 ```elm
 view : Model -> Html msg
@@ -86,7 +86,7 @@ view { toolbar } =
     ]
 ```
 
-Soudainement, le problème disparait ! La date de la toolbar, autrefois hors d'atteinte dans la fonction `toolbarView` devient accessible du premier coup ! Le problème de communication disparait alors en même temps. La vraie question qui se pose alors est « Comment procéder pour retrouver ma structure de toolbar et de footer ? ». Cette question n'est plus à propos du langage, mais de la modélisation. En fusionnant simplement les deux structures de toolbar et de footer, l'inutilité de la structure de footer est immédiatement mise à jour ; là où une telle structure aurait été indispensable dans un modèle à composants. Il est temps de réécrire le modèle.
+Suddenly, the problem disappears! The date in the toolbar, previously out of reach in `toolbarView`, becomes directly accessible. The communication problem disappears in the same time. The real question becomes "How to procede to get my structures of toolbar and footer?". This question is not anymore about the language, but about design. By merging the two structures of toolbar and footer, the uselessness of the footer record is uncovered; when such a structure would have been necessary in a components-based model. It's time to rewrite the model.
 
 ```elm
 type alias Model =
